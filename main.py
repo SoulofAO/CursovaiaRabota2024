@@ -1,24 +1,34 @@
 import Factory
 import Investor
+import Trader
 
 from typing import Optional
 from typing import List
 import StaticFunctions
 
+
 class UMainSimulation:
     def __init__(self):
-        self.factories = [Factory.UFactory("TestFactory", [])]
-        self.investors = [Investor.UInvestor("TestInvestor", [])]
-        self.update_entities = self.factories + self.investors
+        self.factories: List[Factory.UFactory] = [Factory.UFactory("TestFactory", []), Factory.UFactory("TestFactoryV2", [])]
+        self.investors: List[Investor.UInvestor] = [Investor.UInvestor("TestInvestor", []), Investor.UInvestor("TestInvestor_V2", [])]
+        self.traders: List[Trader.UTrader] = []
+
+        self.update_entities = []
+        self.update_entities = self.update_entities + self.factories
+        self.update_entities = self.update_entities + self.investors
         self.actives = []
 
-        self.max_hour_num = 100
+        self.max_hour_num = 10
+
+    def AddTrader(self, trader):
+        self.traders.append(trader)
+        self.update_entities.append(trader)
 
     def LaunchSimulation(self):
         for factory in self.factories:
             factory.GenerateActive()
         for i in range(self.max_hour_num):
-            print("Day",i)
+            print("Day", i)
             self.PrintAllInformation()
             for update_entity in self.update_entities:
                 update_entity.UpdateFunction()
@@ -38,8 +48,10 @@ class UMainSimulation:
         print("Factories")
         for factory in self.factories:
             factory.PrintInfo()
+        print("Traders")
+        for trader in self.traders:
+            trader.PrintInfo()
         print("")
-
 
 
 
