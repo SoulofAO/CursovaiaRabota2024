@@ -20,6 +20,24 @@ class UInvestor:
         self.requests: List[RequestOperation.URequestOperation] = []
 
     def UpdateTickDelayFunction(self):
+        self.UpdateChangeAction()
+
+    def UpdateFunction(self):
+        pass
+
+    def PrintInfo(self):
+        print("Name", self.name, "budget", self.budget)
+
+    def GetValidActives(self, free_actives):
+        free_actives: List[Active.UActive]
+        valid_free_actives = []
+        for free_active in free_actives:
+            if free_active.factory.trader.CostByActive(free_active) < self.budget and abs(
+                    free_active.factory.trader.CostByActive(free_active) - free_active.GetRealCost()) < 12:
+                valid_free_actives.append(free_active)
+        return valid_free_actives
+
+    def UpdateChangeAction(self):
         map_factory_by_interesting = self.GetInterestingFactories()
         for factory_by_interesting in map_factory_by_interesting:
             free_actives = StaticFunctions.GetFreeActives(factory_by_interesting[1].actives)
@@ -41,21 +59,6 @@ class UInvestor:
             active_cost = factory_by_interesting[1].trader.CostByActive(actives_to_sold[0])
             active_cost = active_cost + random.uniform(-0.1, 0.1)
             self.SoldCompanyActive(actives_to_sold[0], active_cost)
-
-    def UpdateFunction(self):
-        pass
-
-    def PrintInfo(self):
-        print("Name", self.name, "budget", self.budget)
-
-    def GetValidActives(self, free_actives):
-        free_actives: List[Active.UActive]
-        valid_free_actives = []
-        for free_active in free_actives:
-            if free_active.factory.trader.CostByActive(free_active) < self.budget and abs(
-                    free_active.factory.trader.CostByActive(free_active) - free_active.GetRealCost()) < 12:
-                valid_free_actives.append(free_active)
-        return valid_free_actives
 
     def GetInterestingFactories(self):
         map_factory_by_rise = []

@@ -1,7 +1,7 @@
 import main
 import Active
-import RequestOperation
 import Trader
+import random
 from typing import List
 from typing import Optional
 
@@ -25,7 +25,7 @@ class UFactory:
         self.start_percent_active = 0.5
         self.percent_per_active = 0.1
         self.actives: List[Active.UActive] = actives
-        self.trader:Optional[Trader.UTrader] = None
+        self.trader: Optional[Trader.UTrader] = None
 
         self.history = []
         self.SaveStateInHistory()
@@ -38,13 +38,17 @@ class UFactory:
 
     def UpdateTickDelayFunction(self):
         self.CalculateNewBudget()
+        self.RandomUpdateBudget()
         self.NormalizeBudget()
 
     def UpdateFunction(self):
         self.SaveStateInHistory()
 
     def CalculateNewBudget(self):
-        self.budget = self.budget + self.cost * self.earn_from_cost_multiplier
+        self.budget = self.budget + self.cost * self.earn_from_cost_multiplier *(1+main.main_simulation.global_market.GetGrowthTrend(main.main_simulation.tick))
+
+    def RandomUpdateBudget(self):
+        self.budget = self.budget + random.uniform(-100, 0)
 
     def NormalizeBudget(self):
         if self.budget > self.normalize_budget:
