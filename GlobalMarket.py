@@ -3,7 +3,8 @@ class UGlobalMarket:
         pass
 
     def GetGrowthTrend(self, tick):
-        return 0.0
+        return 0.9
+
 
 
 

@@ -17,6 +17,8 @@ class UInvestor:
         self.tick_rate = tick_rate
         self.tick_index = 0
         self.max_investing_factory = max_investing_factory
+        self.risky = 0.2
+        self.check_factory_distance = 2
         self.requests: List[RequestOperation.URequestOperation] = []
 
     def UpdateTickDelayFunction(self):
@@ -40,14 +42,17 @@ class UInvestor:
     def UpdateChangeAction(self):
         map_factory_by_interesting = self.GetInterestingFactories()
         for factory_by_interesting in map_factory_by_interesting:
-            free_actives = StaticFunctions.GetFreeActives(factory_by_interesting[1].actives)
-            if len(free_actives) > 0:
-                free_valid_actives = self.GetValidActives(free_actives)
-                if len(free_valid_actives) > 0:
-                    active_cost = factory_by_interesting[1].trader.CostByActive(free_valid_actives[0])
-                    active_cost = active_cost + random.uniform(-0.1,0.1)
-                    self.BuyCompanyActive(free_valid_actives[0], active_cost)
-                break
+            if factory_by_interesting[0]>0.01:
+                free_actives = StaticFunctions.GetFreeActives(factory_by_interesting[1].actives)
+                if len(free_actives) > 0:
+                    free_valid_actives = self.GetValidActives(free_actives)
+                    if len(free_valid_actives) > 0:
+                        l_buy_actuve = free_valid_actives[random.randint(0, len(free_valid_actives)-1)]
+                        active_cost = factory_by_interesting[1].trader.CostByActive(l_buy_actuve)
+                        active_cost = active_cost + random.uniform(-0.1,0.1)
+                        self.BuyCompanyActive(l_buy_actuve, active_cost)
+                    break
+
         map_factory_by_interesting.reverse()
         reverse_map_factory_by_interesting =  map_factory_by_interesting
         for factory_by_interesting in reverse_map_factory_by_interesting:
@@ -64,10 +69,10 @@ class UInvestor:
         map_factory_by_rise = []
         for factory in main.main_simulation.factories:
             factory:Optional[Factory.UFactory]
-            if len(factory.history) > factory.tick_rate:
+            if len(factory.history) > factory.tick_rate+self.check_factory_distance:
                 rise = factory.history[len(factory.history) - 1][0] - factory.history[
-                    len(factory.history) - factory.tick_rate][0]
-                map_factory_by_rise.append([rise, factory])
+                    len(factory.history) - factory.tick_rate - self.check_factory_distance][0]
+                map_factory_by_rise.append([rise+random.uniform(-1*self.risky,1*self.risky), factory])
         res = sorted(map_factory_by_rise, reverse=True, key=lambda x: x[0])
         return res
 

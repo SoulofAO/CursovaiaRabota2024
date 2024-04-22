@@ -12,7 +12,7 @@ class UMainSimulation:
     def __init__(self, factories, investors, global_market):
         self.factories: List[Factory.UFactory] = factories
         self.investors: List[Investor.UInvestor] = investors
-        self.global_market = global_market
+        self.global_market : Optional[GlobalMarket.UGlobalMarket] = global_market
         self.traders: List[Trader.UTrader] = []
 
         self.update_entities = []
@@ -21,7 +21,7 @@ class UMainSimulation:
         self.actives = []
         self.tick = 0
 
-        self.max_hour_num = 15
+        self.max_hour_num = 30
 
     def AddTrader(self, trader):
         self.traders.append(trader)
@@ -55,6 +55,7 @@ class UMainSimulation:
         print("Traders")
         for trader in self.traders:
             trader.PrintInfo()
+        print("Market Situation", self.global_market.GetGrowthTrend(self.tick))
         print("")
 
 
