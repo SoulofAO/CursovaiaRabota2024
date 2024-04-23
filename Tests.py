@@ -37,30 +37,29 @@ def BaseTest():
 
 
 def GrowthUpTest():
-    main_simulation = main.UMainSimulation([Factory.UFactory("TestFactory", []), Factory.UFactory("TestFactoryV2", [])],
-                                           [Investor.UInvestor("TestInvestor", []),
-                                            Investor.UInvestor("TestInvestor_V2", [])],
+    main_simulation = main.UMainSimulation(GenerateFactories([[3, Factory.UFactory]]),
+                                           GenerateInvestors([[20, Investor.UInvestor]]),
                                            GrowthUpMarket.UGrowthUpMarket())
     main.main_simulation = main_simulation
     main_simulation.LaunchSimulation()
 
 
 def GrowthDownTest():
-    main_simulation = main.UMainSimulation([Factory.UFactory("TestFactory", []), Factory.UFactory("TestFactoryV2", [])],
-                                           [Investor.UInvestor("TestInvestor", []),
-                                            Investor.UInvestor("TestInvestor_V2", [])],
+    main_simulation = main.UMainSimulation(GenerateFactories([[3, Factory.UFactory]]),
+                                           GenerateInvestors([[20, Investor.UInvestor]]),
                                            GrowthDownMarket.UGrowthDownMarket())
     main.main_simulation = main_simulation
     main_simulation.LaunchSimulation()
 
 
-def WaveGrowthTest():
-
-    main_simulation = main.UMainSimulation(GenerateFactories([[3,Factory.UFactory]]),
-                                           GenerateInvestors([[20,Investor.UInvestor]]),
+def GrowthWaveTest():
+    main_simulation = main.UMainSimulation(GenerateFactories([[3, Factory.UFactory]]),
+                                           GenerateInvestors([[20, Investor.UInvestor]]),
                                            WaveMarket.UWaveMarket())
     main.main_simulation = main_simulation
     main_simulation.LaunchSimulation()
 
 
-WaveGrowthTest()
+GrowthWaveTest()
+main.main_simulation.history.BuildGraphFromVariable(main.main_simulation.history.length_bought_action, "length_bought_action")
+main.main_simulation.history.BuildGraphFromVariable(main.main_simulation.history.sum_cost_factory,"sum_cost_factory")

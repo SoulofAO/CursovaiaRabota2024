@@ -2,17 +2,30 @@ import Factory
 import Investor
 import Trader
 import GlobalMarket
-
 from typing import Optional
 from typing import List
 import StaticFunctions
+import History
+
+
+class UMainSimulationHistory(History.UHistory):
+    def __init__(self, owner):
+        owner: Optional[UMainSimulation]
+        super().__init__(owner)
+        self.length_bought_action = []
+        self.sum_cost_factory = []
+
+    def SaveHistory(self):
+        self.length_bought_action.append(len(self.owner.actives) - len(StaticFunctions.GetFreeActives(self.owner.actives)))
+
+        self.sum_cost_factory.append(sum(factory.cost for factory in self.owner.factories))
 
 
 class UMainSimulation:
     def __init__(self, factories, investors, global_market):
         self.factories: List[Factory.UFactory] = factories
         self.investors: List[Investor.UInvestor] = investors
-        self.global_market : Optional[GlobalMarket.UGlobalMarket] = global_market
+        self.global_market: Optional[GlobalMarket.UGlobalMarket] = global_market
         self.traders: List[Trader.UTrader] = []
 
         self.update_entities = []
@@ -21,6 +34,8 @@ class UMainSimulation:
         self.actives = []
         self.tick = 0
 
+        self.history : Optional[UMainSimulationHistory] = None
+
         self.max_hour_num = 30
 
     def AddTrader(self, trader):
@@ -28,6 +43,7 @@ class UMainSimulation:
         self.update_entities.append(trader)
 
     def LaunchSimulation(self):
+        self.history = UMainSimulationHistory(self)
         for factory in self.factories:
             factory.GenerateActive()
         for i in range(self.max_hour_num):
@@ -41,6 +57,7 @@ class UMainSimulation:
                     update_entity.UpdateTickDelayFunction()
                     update_entity.PrintInfo()
                     update_entity.tick_index = 0
+            self.history.SaveHistory()
 
     def PrintAllInformation(self):
         print("Actives")
@@ -57,7 +74,6 @@ class UMainSimulation:
             trader.PrintInfo()
         print("Market Situation", self.global_market.GetGrowthTrend(self.tick))
         print("")
-
 
 
 main_simulation = None
